@@ -17,7 +17,7 @@
         
     </title>
 
-    <link rel="canonical" href="https://blog.kido.pw/tags/">
+    <link rel="canonical" href="https://blog.kido.site/tags/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -82,7 +82,7 @@
             <div class="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/">Home</a>
+                        <a href="/">BLOG</a>
                     </li>
 
                     <!-- movie 和 book  属于跳转外部网站 -->
@@ -94,6 +94,16 @@
                         <a href="http://localhost:8080/book/list/1/6">BOOK</a>
                     </li>
 
+                    <li>
+                        <a href="http://localhost:8080/tab/show">NAVIGATION</a>
+                    </li>
+
+                    <li>
+                        <a href="http://localhost:8080/author/about">ABOUT</a>
+                    </li>
+
+
+                    <!--
                     
 
                         
@@ -119,7 +129,8 @@
                         </li>
                         
                     
-                    
+                    -->
+
                 </ul>
             </div>
         </div>
@@ -181,11 +192,11 @@
             <!-- 标签云 -->
             <div id='tag_cloud' class="tags">
                 
+                    <a href="#生活" title="生活" rel="1">生活</a>
+                
                     <a href="#前端开发" title="前端开发" rel="3">前端开发</a>
                 
                     <a href="#JavaScript" title="JavaScript" rel="3">JavaScript</a>
-                
-                    <a href="#生活" title="生活" rel="1">生活</a>
                 
                     <a href="#翻译" title="翻译" rel="1">翻译</a>
                 
@@ -199,6 +210,32 @@
 
             <!-- 标签列表 -->
 
+            
+            <div class="one-tag-list">
+                <span class="fa fa-tag listing-seperator" id="生活">
+                    <span class="tag-text">生活</span>
+                </span>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
+                     <a href="/2014/01/29/hello-2015/">
+                        <h2 class="post-title">
+                            Welcome to Hux Blog
+                        </h2>
+                        
+                            <h3 class="post-subtitle">
+                                 "Hello World, Hello Blog"
+                            </h3>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+            </div>
             
             <div class="one-tag-list">
                 <span class="fa fa-tag listing-seperator" id="前端开发">
@@ -229,14 +266,10 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2013/05/25/js-module-loader/">
+                     <a href="/2014/09/22/js-version/">
                         <h2 class="post-title">
-                            Example Post with Code Highlight
+                            Example Post
                         </h2>
-                        
-                            <h3 class="post-subtitle">
-                                CommonJS，RequireJS，SeaJS 归纳笔记
-                            </h3>
                         
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
@@ -248,10 +281,14 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2014/09/22/js-version/">
+                     <a href="/2013/05/25/js-module-loader/">
                         <h2 class="post-title">
-                            Example Post
+                            Example Post with Code Highlight
                         </h2>
+                        
+                            <h3 class="post-subtitle">
+                                CommonJS，RequireJS，SeaJS 归纳笔记
+                            </h3>
                         
                     </a>
                     <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
@@ -289,25 +326,6 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2013/05/25/js-module-loader/">
-                        <h2 class="post-title">
-                            Example Post with Code Highlight
-                        </h2>
-                        
-                            <h3 class="post-subtitle">
-                                CommonJS，RequireJS，SeaJS 归纳笔记
-                            </h3>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
                      <a href="/2014/09/22/js-version/">
                         <h2 class="post-title">
                             Example Post
@@ -318,25 +336,18 @@
                 </div>
                 <hr>
                 
-            </div>
-            
-            <div class="one-tag-list">
-                <span class="fa fa-tag listing-seperator" id="生活">
-                    <span class="tag-text">生活</span>
-                </span>
-                
                   <!-- <li class="listing-item">
                   <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2014/01/29/hello-2015/">
+                     <a href="/2013/05/25/js-module-loader/">
                         <h2 class="post-title">
-                            Welcome to Hux Blog
+                            Example Post with Code Highlight
                         </h2>
                         
                             <h3 class="post-subtitle">
-                                 "Hello World, Hello Blog"
+                                CommonJS，RequireJS，SeaJS 归纳笔记
                             </h3>
                         
                     </a>
@@ -564,7 +575,7 @@
 <script>
     // only load tagcloud.js in tag.html
     if($('#tag_cloud').length !== 0){
-        async("https://blog.kido.pw/js/jquery.tagcloud.js",function(){
+        async("https://blog.kido.site/js/jquery.tagcloud.js",function(){
             $.fn.tagcloud.defaults = {
                 //size: {start: 1, end: 1, unit: 'em'},
                 color: {start: '#bbbbee', end: '#0085a1'},
@@ -614,7 +625,7 @@
 
 
 <!-- Image to hack wechat -->
-<img src="https://blog.kido.pw/img/icon_wechat.png" width="0" height="0" />
+<img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" />
 <!-- Migrate from head to bottom, no longer block render and still work -->
 
 </body>
