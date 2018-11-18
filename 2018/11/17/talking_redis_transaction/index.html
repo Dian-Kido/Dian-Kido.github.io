@@ -108,14 +108,14 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -257,7 +257,7 @@
 <h4 id="WATCH"><a href="#WATCH" class="headerlink" title="WATCH"></a>WATCH</h4><p>WATCH 用于事务开启之前对任意数量的Key进行监视，如果这个被监视的key被改动（这里提一下，<strong>这个改动，不管是删除、添加、修改，或者A -&gt; B -&gt; A改回原值，都会被认为发生了改动</strong>），那么相应事务就被取消，否则事务正常执行。所以我们可以认为 WATCH 是一个乐观锁。<br>如果想让key取消被监控，可以用 UNWATCH 命令(这里又要提一下，<strong>UNWATCH 如果在事务中执行，也是会被放到队列里的</strong>)。</p>
 <p>如上文所说，<strong>WATCH对于添加操作也是敏感的</strong>，也就说我们可以对一个不存在的Key进行WATCH。假如cli_1客户端对一个不存在的Key进行WATCH，此时cli_2客户端增加了这个键，那么cli_1客户端的事务依然不会执行，这个很有意思</p>
 <h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>本应该对redis事务相关的数据结构等展开来讲，但是篇幅有限（主要是能力有限，嘘~），所以想了解的可以去好好看看《Redis设计与实现》</p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a href="http://redisbook.com/index.html" target="_blank" rel="noopener">《Redis设计与实现》黄健宏 著</a><br>2.<a href="http://www.redis.cn/documentation.html" target="_blank" rel="noopener">redis官网</a><br>3.<a href="https://spring.io/projects/spring-data-redis#overview" target="_blank" rel="noopener">Spring Data Redis</a><br>4.<a href="https://book.douban.com/subject/26612779/" target="_blank" rel="noopener">《Redis 实战》Josiah L. Carlson</a></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a href="http://redisbook.com/index.html" target="_blank" rel="noopener">《Redis设计与实现》黄健宏 著</a><br>2.<a href="http://www.redis.cn/documentation.html" target="_blank" rel="noopener"> redis官网</a><br>3.<a href="https://spring.io/projects/spring-data-redis#overview" target="_blank" rel="noopener"> Spring Data Redis</a><br>4.<a href="https://book.douban.com/subject/26612779/" target="_blank" rel="noopener">《Redis 实战》Josiah L. Carlson</a></p>
 
 
                 <hr>
