@@ -13,11 +13,11 @@
 
     <title>
         
-          Archives - Kido的博客 | Kido&#39;s Blog
+          缓存与数据库一致性系列-序言 - Kido的博客 | Kido&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="https://blog.kido.site/archives/">
+    <link rel="canonical" href="https://blog.kido.site/2018/11/24/db-and-cache-preface/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -166,79 +166,175 @@
 
 
     <!-- Main Content -->
-    <!-- Page Header -->
-<header class="intro-header" style="background-image: url('/img/tag-bg.jpg')">
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('db-and-cache-bg01.jpg')
+    }
+</style>
+<header class="intro-header" >
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading">
-                    <h1>Archives</h1>
-                    <!--<hr class="small">-->
-                    <span class="subheading">Hey, this is Archives.</span>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                        
+                          <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                        
+                          <a class="tag" href="/tags/#后端" title="后端">后端</a>
+                        
+                    </div>
+                    <h1>缓存与数据库一致性系列-序言</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Kido on
+                        2018-11-24
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <!-- 归档列表 -->
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
 
-            
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
 
-             <!-- 归档列表 -->
+                <p>一般来说，对于一个新的业务，一般会经历这几个阶段：</p>
+<h3 id="阶段1：单库阶段"><a href="#阶段1：单库阶段" class="headerlink" title="阶段1：单库阶段"></a>阶段1：单库阶段</h3><p>读写流量都比较小，这个时候所有的读写操作都在主库就ok了<br>这个时候，从库可能只是用来灾备<br><strong>风险分析：</strong>从数据一致性角度来说没有风险，全走主库美滋滋~</p>
+<h3 id="阶段2：多库阶段"><a href="#阶段2：多库阶段" class="headerlink" title="阶段2：多库阶段"></a>阶段2：多库阶段</h3><h4 id="阶段2-1："><a href="#阶段2-1：" class="headerlink" title="阶段2.1："></a>阶段2.1：</h4><p>单库扛不住了，这个时候就会考虑到分库分表了，通过增加数据库的方式，把单库的QPS降下来<br><strong>风险分析：</strong> 从数据一致性角度来说没有风险，全走主库依然美滋滋~</p>
+<h4 id="阶段2-2："><a href="#阶段2-2：" class="headerlink" title="阶段2.2："></a>阶段2.2：</h4><p>读流量增加，主库的读QPS偏高，这个时候我们就想着把从库得利用起来，于是读写分离：读主库，写从库<br><strong>风险分析：</strong>读从库就意味着，<strong>读到的数据可能不是最新的</strong>，在实时性要求比较高的业务中是不能接受的，那应该如何解决呢？由于”DB主从一致性”不是本系列讨论的重点，所以这里推荐一篇文章,它介绍了几种比较不错的解决方案，感兴趣的大家可以去读一下：<a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651959442&amp;idx=1&amp;sn=feb8ff75385d8031386e120ef3535329&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">DB主从一致性架构优化4种方法</a></p>
+<h3 id="阶段3：数据库-缓存"><a href="#阶段3：数据库-缓存" class="headerlink" title="阶段3：数据库+缓存"></a>阶段3：数据库+缓存</h3><p>对于互联网公司来说，大部分业务都面临着读多写少的情况（如果你写都有压力的话，那你做的业务一定很赚钱吧），而数据库资源是极其宝贵的，所以我们没有办法一味的添加从库，或者说不断的增加分库分表来解决，一是因为老板不会同意，二是不断分库分表的话，数据迁移过程也是高风险的。<br>所以，这个时候我们一般会通过添加的缓存的方式，来解决读压力<br><strong>风险分析：缓存与数据库数据一致性问题</strong></p>
+<p>这就引出本系列文章，想要讨论的问题：<strong>缓存与数据库数据一致性问题</strong>，在提出解决方案之前，我们应该分析自己当前的业务和架构，看看自己的要达到的目标是什么？不同的方案解决的问题是不一样的</p>
+<h3 id="所以，你的业务和目标是怎样的呢？"><a href="#所以，你的业务和目标是怎样的呢？" class="headerlink" title="所以，你的业务和目标是怎样的呢？"></a>所以，你的业务和目标是怎样的呢？</h3><ul>
+<li>你是要求最终一致性、还是强一致性？</li>
+<li>你对缓存一致性的要求到底有多高？延迟1ms行不行？延迟1min行不行？</li>
+<li>你当前是单库单表？还是多库多表？</li>
+<li>你缓存的数据结构是怎样的？是否存在多表合并？是否存在多行合并的情况？甚至多库合并的情况？</li>
+<li>该如何容灾?更新、删除缓存失败你能不能接受？写数据库失败怎么办？</li>
+<li>如果删除缓存失败，你还允不允许更新数据库？</li>
+<li>……</li>
+</ul>
+<p>只有我们看清楚自己的系统需要达到一种怎样的要求，才能针对性的制定对应的方案。<br>本系列文章，会针对不同的场景提出不同的解决方案，并从一致性、容灾等各方面分析其优缺点，如果对你有帮助，那就再好不过了</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>《无敌破坏王2》电影要开始了，没空写后记，再见~</p>
 
 
+                <hr>
 
-            
-            <div class="one-tag-list">
-                <span class="fa fa-calendar-times-o listing-seperator" id="2018">
-                    <span class="tag-text">2018</span>
-                </span>
-                <ul>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <li >
-                    11-24
-                    <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    <a href="/2018/11/24/db-and-cache-preface/" style="color: #0085a1">
-                        <span>
-                            缓存与数据库一致性系列-序言
-                        </span>
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </li>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <li >
-                    11-17
-                    <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                    <a href="/2018/11/17/talking_redis_transaction/" style="color: #0085a1">
-                        <span>
-                            浅谈Redis事务
-                        </span>
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </li>
                 
 
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/11/17/talking_redis_transaction/" data-toggle="tooltip" data-placement="top" title="浅谈Redis事务">Next Post &rarr;</a>
+                        </li>
+                    
                 </ul>
-            </div>
-            
 
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Redis" title="Redis">Redis</a>
+                        
+                          <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
+                        
+                          <a class="tag" href="/tags/#后端" title="后端">后端</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://www.tianshouzhi.com/" target="_blank">TianShouzhi&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
 
         </div>
     </div>
-</div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
 
 
     <!-- Footer -->

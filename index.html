@@ -203,6 +203,30 @@
 
 <div class="post-preview">
 
+    <a href="/2018/11/24/db-and-cache-preface/">
+        <h2 class="post-title">
+            缓存与数据库一致性系列-序言
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            一般来说，对于一个新的业务，一般会经历这几个阶段：
+阶段1：单库阶段读写流量都比较小，这个时候所有的读写操作都在主库就ok了这个时候，从库可能只是用来灾备风险分析：从数据一致性角度来说没有风险，全走主库美滋滋~
+阶段2：多库阶段阶段2.1：单库扛不住了，这个时候就会考虑到分库分表了，通过增加数据库的方式，把单库的QPS降下来风险分析： 从数据一致性角度来说没有风险，全走主库依然美滋滋~
+阶段......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Kido on
+        2018-11-24
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2018/11/17/talking_redis_transaction/">
         <h2 class="post-title">
             浅谈Redis事务
@@ -211,8 +235,8 @@
             
         </h3>
         <div class="post-content-preview">
-            Redis的事务和传统关系数据库的事务并不相同传统数据库事务过程在关系型数据库中，我们开启事务并进行一系列的读写操作，最后，用户用户可以选择发送commit来确认之前的修改，或者发送rollback来放弃之前的修改。
-1234567891011Connection conn = ... //获取数据库连接conn.setAutoCommit(false); //开启事务try&#123;  ......
+            Redis事务和传统关系数据库事务的区别传统数据库事务过程在关系型数据库中，我们开启事务并进行一系列的读写操作，最后，用户用户可以选择发送commit来确认之前的修改，或者发送rollback来放弃之前的修改。
+1234567891011Connection conn = ... //获取数据库连接conn.setAutoCommit(false); //开启事务try&#123;   //......
         </div>
     </a>
     <p class="post-meta">
@@ -254,11 +278,15 @@
                     <div class="tags">
                         
                             
-                            <a href="/tags/#Redis" title="Redis" rel="1">Redis</a>
+                            <a href="/tags/#Redis" title="Redis" rel="2">Redis</a>
                             
                         
                             
-                            <a href="/tags/#后端" title="后端" rel="1">后端</a>
+                            <a href="/tags/#数据库" title="数据库" rel="1">数据库</a>
+                            
+                        
+                            
+                            <a href="/tags/#后端" title="后端" rel="2">后端</a>
                             
                         
                     </div>
