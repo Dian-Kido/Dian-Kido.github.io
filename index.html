@@ -203,6 +203,38 @@
 
 <div class="post-preview">
 
+    <a href="/2018/12/01/db-and-cache-01/">
+        <h2 class="post-title">
+            缓存与数据库一致性系列-01
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            今天，我们来分析一下，缓存与数据库被使用次数最多的一种使用方法
+
+读流程：第一步先删除缓存，删除之后再更新DB，之后再异步将数据刷回缓存
+写流程：第一步先读缓存，如果缓存没读到，则去读DB，之后再异步将数据刷回缓存
+方案分析优点剖析1. 实现起来简单
+What Should I Say ?
+
+2. “先淘汰缓存，再写数据库” 合理
+为什么说这也算优点呢？试想一下
+
+
+如果把写流程改一下：先更......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Kido on
+        2018-12-01
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2018/11/24/db-and-cache-preface/">
         <h2 class="post-title">
             缓存与数据库一致性系列-序言
@@ -278,15 +310,19 @@
                     <div class="tags">
                         
                             
-                            <a href="/tags/#Redis" title="Redis" rel="2">Redis</a>
+                            <a href="/tags/#缓存" title="缓存" rel="3">缓存</a>
                             
                         
                             
-                            <a href="/tags/#数据库" title="数据库" rel="1">数据库</a>
+                            <a href="/tags/#数据库" title="数据库" rel="2">数据库</a>
                             
                         
                             
-                            <a href="/tags/#后端" title="后端" rel="2">后端</a>
+                            <a href="/tags/#后端" title="后端" rel="3">后端</a>
+                            
+                        
+                            
+                            <a href="/tags/#Redis" title="Redis" rel="1">Redis</a>
                             
                         
                     </div>
