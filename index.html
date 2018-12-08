@@ -108,14 +108,14 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -203,6 +203,30 @@
 
 <div class="post-preview">
 
+    <a href="/2018/12/08/db-and-cache-02/">
+        <h2 class="post-title">
+            缓存与数据库一致性系列-02
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            在《缓存与数据库一致性系列-01》文章，我们提到，“它的一个比较大的缺陷在于刷新缓存有可能会失败，而失败之后缓存中数据就一直会处于错误状态，所以它并不能保证数据的最终一致性”
+为了保证“数据最终一致性”，我们引入binlog，通过解析binlog来刷新缓存，这样即使刷新失败，依然可以进行日志回放，再次刷新缓存
+
+写流程：第一步先删除缓存，删除之后再更新DB，我们监听从库(资源少的话主库也ok......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Kido on
+        2018-12-08
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2018/12/01/db-and-cache-01/">
         <h2 class="post-title">
             缓存与数据库一致性系列-01
@@ -218,9 +242,8 @@
 方案分析优点剖析1. 实现起来简单
 What Should I Say ?
 
-2. “先淘汰缓存，再写数据库” 合理
-为什么说这也算优点呢？试想一下
-如果把写流程改一下：先更新缓......
+2. “先淘汰缓存，再写数据库” 合理为什么说这也算优点呢？试想一下
+如果把写流程改一下：先更新缓存......
         </div>
     </a>
     <p class="post-meta">
@@ -308,15 +331,15 @@ What Should I Say ?
                     <div class="tags">
                         
                             
-                            <a href="/tags/#缓存" title="缓存" rel="3">缓存</a>
+                            <a href="/tags/#缓存" title="缓存" rel="4">缓存</a>
                             
                         
                             
-                            <a href="/tags/#数据库" title="数据库" rel="2">数据库</a>
+                            <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
                             
                         
                             
-                            <a href="/tags/#后端" title="后端" rel="3">后端</a>
+                            <a href="/tags/#后端" title="后端" rel="4">后端</a>
                             
                         
                             

@@ -13,11 +13,11 @@
 
     <title>
         
-          缓存与数据库一致性系列-序言 - Kido的博客 | Kido&#39;s Blog
+          缓存与数据库一致性系列-02 - Kido的博客 | Kido&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="https://blog.kido.site/2018/11/24/db-and-cache-preface/">
+    <link rel="canonical" href="https://blog.kido.site/2018/12/08/db-and-cache-02/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -174,7 +174,7 @@
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('db-and-cache-bg01.jpg')
+        background-image: url('db-and-cache-02-bg01.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -191,11 +191,11 @@
                           <a class="tag" href="/tags/#后端" title="后端">后端</a>
                         
                     </div>
-                    <h1>缓存与数据库一致性系列-序言</h1>
+                    <h1>缓存与数据库一致性系列-02</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by Kido on
-                        2018-11-24
+                        2018-12-08
                     </span>
                 </div>
             </div>
@@ -214,23 +214,61 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <p>一般来说，对于一个新的业务，一般会经历这几个阶段：</p>
-<h3 id="阶段1：单库阶段"><a href="#阶段1：单库阶段" class="headerlink" title="阶段1：单库阶段"></a>阶段1：单库阶段</h3><p>读写流量都比较小，这个时候所有的读写操作都在主库就ok了<br>这个时候，从库可能只是用来灾备<br><strong>风险分析：</strong>从数据一致性角度来说没有风险，全走主库美滋滋~</p>
-<h3 id="阶段2：多库阶段"><a href="#阶段2：多库阶段" class="headerlink" title="阶段2：多库阶段"></a>阶段2：多库阶段</h3><h4 id="阶段2-1："><a href="#阶段2-1：" class="headerlink" title="阶段2.1："></a>阶段2.1：</h4><p>单库扛不住了，这个时候就会考虑到分库分表了，通过增加数据库的方式，把单库的QPS降下来<br><strong>风险分析：</strong> 从数据一致性角度来说没有风险，全走主库依然美滋滋~</p>
-<h4 id="阶段2-2："><a href="#阶段2-2：" class="headerlink" title="阶段2.2："></a>阶段2.2：</h4><p>读流量增加，主库的读QPS偏高，这个时候我们就想着把从库得利用起来，于是读写分离：读主库，写从库<br><strong>风险分析：</strong>读从库就意味着，<strong>读到的数据可能不是最新的</strong>，在实时性要求比较高的业务中是不能接受的，那应该如何解决呢？由于”DB主从一致性”不是本系列讨论的重点，所以这里推荐一篇文章,它介绍了几种比较不错的解决方案，感兴趣的大家可以去读一下：<a href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&amp;mid=2651959442&amp;idx=1&amp;sn=feb8ff75385d8031386e120ef3535329&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">DB主从一致性架构优化4种方法</a></p>
-<h3 id="阶段3：数据库-缓存"><a href="#阶段3：数据库-缓存" class="headerlink" title="阶段3：数据库+缓存"></a>阶段3：数据库+缓存</h3><p>对于互联网公司来说，大部分业务都面临着读多写少的情况（如果你写都有压力的话，那你做的业务一定很赚钱吧），而数据库资源是极其宝贵的，所以我们没有办法一味的添加从库，或者说不断的增加分库分表来解决，一是因为老板不会同意，二是不断分库分表的话，数据迁移过程也是高风险的。<br>所以，这个时候我们一般会通过添加的缓存的方式，来解决读压力<br><strong>风险分析：缓存与数据库数据一致性问题</strong></p>
-<p>这就引出本系列文章，想要讨论的问题：<strong>缓存与数据库数据一致性问题</strong>，在提出解决方案之前，我们应该分析自己当前的业务和架构，看看自己的要达到的目标是什么？不同的方案解决的问题是不一样的</p>
-<h3 id="所以，你的业务和目标是怎样的呢？"><a href="#所以，你的业务和目标是怎样的呢？" class="headerlink" title="所以，你的业务和目标是怎样的呢？"></a>所以，你的业务和目标是怎样的呢？</h3><ul>
-<li>你是要求最终一致性、还是强一致性？</li>
-<li>你对缓存一致性的要求到底有多高？延迟1ms行不行？延迟1min行不行？</li>
-<li>你当前是单库单表？还是多库多表？</li>
-<li>你缓存的数据结构是怎样的？是否存在多表合并？是否存在多行合并的情况？甚至多库合并的情况？</li>
-<li>该如何容灾?更新、删除缓存失败你能不能接受？写数据库失败怎么办？</li>
-<li>如果删除缓存失败，你还允不允许更新数据库？</li>
-<li>……</li>
+                <p>在<a href="https://blog.kido.site/2018/12/01/db-and-cache-01/">《缓存与数据库一致性系列-01》</a>文章，我们提到，<em>“它的一个比较大的缺陷在于刷新缓存有可能会失败，而失败之后缓存中数据就一直会处于错误状态，所以它并不能保证数据的最终一致性”</em></p>
+<p>为了保证“数据最终一致性”，我们引入binlog，通过解析binlog来刷新缓存，这样即使刷新失败，依然可以进行日志回放，再次刷新缓存</p>
+<p><img class="shadow" width="777" src="db-and-cache-02-01.jpg"></p>
+<h3 id="写流程："><a href="#写流程：" class="headerlink" title="写流程："></a>写流程：</h3><p>第一步先删除缓存，删除之后再更新DB，我们监听从库(资源少的话主库也ok)的binlog，通过分析binlog我们解析出需要需要刷新的数据，然后读主库把最新的数据写入缓存。</p>
+<blockquote>
+<p>这里需要提一下：最后刷新前的读主库或者读从库，甚至不读库直接通过binlog解析出需要的数据都是ok的，这由业务决定，<strong>比如刷新的数据只是表的一行，那直接通过binlog就完全能解析出来；然而如果需要刷新的数据来自多行，多张表，甚至多个库的话，那就需要读主库或是从库才行</strong></p>
+</blockquote>
+<h3 id="读流程："><a href="#读流程：" class="headerlink" title="读流程："></a>读流程：</h3><p>第一步先读缓存，如果缓存没读到，则去读DB，之后再异步将数据刷回缓存</p>
+<h2 id="方案分析"><a href="#方案分析" class="headerlink" title="方案分析"></a>方案分析</h2><h3 id="优点剖析"><a href="#优点剖析" class="headerlink" title="优点剖析"></a>优点剖析</h3><h4 id="1-容灾"><a href="#1-容灾" class="headerlink" title="1. 容灾"></a>1. 容灾</h4><p>写步骤1.4或1.5 如果失败，可以进行日志回放，再次重试。<br>无论步骤1.1是否删除成功，后续的刷新操作是有保证的</p>
+<blockquote>
+<p>妈耶，怎么就一个优点，讲道理这个其实很常用的，那我们再来看看缺点</p>
+</blockquote>
+<h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><blockquote>
+<p>分析缺点之前，我们先来看一下知识点</p>
+<ol>
+<li><p>对于同一张表的同一条记录的更新，Databus会以串行形式的通知下游服务，也就是说，只有当我们正确返回后，它才会推送该记录的下一次更新。</p>
+</li>
+<li><p>对于同一张表的不同记录的更新， Databus会以事件时间为顺序的通知下游服务，但并不会等待我们返回后才推送下一条，也就是说它是非串行的。</p>
+</li>
+<li><p>对于不同表，根据其下游的消费速度，不同表之间没有明确的时间顺序。</p>
+</li>
+</ol>
+</blockquote>
+<h4 id="1-只适合简单业务，复杂业务容易发生并发问题"><a href="#1-只适合简单业务，复杂业务容易发生并发问题" class="headerlink" title="1. 只适合简单业务，复杂业务容易发生并发问题"></a>1. 只适合简单业务，复杂业务容易发生并发问题</h4><p>这里先来解释一下这里说的“简单业务”是啥意思？</p>
+<blockquote>
+<p>简单业务：每次需要刷新的数据，都来自<strong>单表单行</strong>。</p>
+</blockquote>
+<p>为什么复杂业务就不行呢？我举个例子<br>我们假设  <strong>一个订单 = A表信息 + B表信息</strong></p>
+<p><img class="shadow" width="777" src="db-and-cache-02-02.jpg"></p>
+<p>由于A表先变化，经过1，2，3步后，线程1获取了A’B （A表是新数据，B表的老数据），当线程1还没来得及刷新缓存时，并发发生了：</p>
+<p>此时，B表发生了更新，经过4，5，6，7将最新的数据A’B’写入缓存，此时此刻缓存数据是符合要求的。</p>
+<p>但是，后来线程1进行了第8步，将A’B写入数据，使得缓存最终结果 与 DB 不一致。</p>
+<h5 id="缺点1的改进"><a href="#缺点1的改进" class="headerlink" title="缺点1的改进"></a>缺点1的改进</h5><ul>
+<li><strong>针对单库多表单次更新的改进：利用事务</strong></li>
 </ul>
-<p>只有我们看清楚自己的系统需要达到一种怎样的要求，才能针对性的制定对应的方案。<br>本系列文章，会针对不同的场景提出不同的解决方案，并从并发、容灾等各方面分析其优缺点<br>如果对你有帮助，那就再好不过了</p>
-<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>《无敌破坏王2》电影要开始了，没空写后记，再见~</p>
+<p><img class="shadow" width="777" src="db-and-cache-02-03.jpg"></p>
+<p>当AB表的更新发生在一个事务内时，不管线程1、线程2如何读取，他们都能获取两张表的最新数据，所以刷新缓存的数据都是符合要求的。</p>
+<p>但是这种方案具有局限性：那就是一个订单的信息会存储在很多表中，并不是每一次更新都会刷新所有的表，比如再次单独更新C表的操作，并发问题依然会发生。</p>
+<p>所以<strong>这种方案只针对多表单次更新的情况</strong>。</p>
+<ul>
+<li><strong>针对多表多次更新的改进：增量更新</strong></li>
+</ul>
+<p><img class="shadow" width="777" src="db-and-cache-02-04.jpg"></p>
+<p>每张表的更新，在同步缓存时，只获取该表的字段覆盖缓存。</p>
+<p>这样，线程1，线程2总能获取对应表最新的字段，而且Databus对于同表同行会以串行的形式通知下游，所以能保证缓存的最终一致性。</p>
+<p>这里有一点需要提一下：更新“某张表多行记录“时，这个操作要在一个事务内，不然并发问题依然存在，正如前面分析的</p>
+<h4 id="2-依然是并发问题"><a href="#2-依然是并发问题" class="headerlink" title="2. 依然是并发问题"></a>2. 依然是并发问题</h4><p>及时对于<strong>缺点1</strong>我们提出了改进方案，虽然它解决了部分问题，但在极端场景下依然存在并发问题。<br>这个场景，就是缓存中没有数据的情况：</p>
+<ul>
+<li>读的时候，缓存的数据已失效，此时又发生了更新</li>
+<li>数据更新的时候，缓存的数据已失效，此时又发生了更新</li>
+</ul>
+<p>这个时候，我们在上面提到的“增量更新”就不起作用了，我们需要读取<strong>所有的表</strong>来拼凑出初始数据，那这个时候又涉及到<strong>读所有表的操作</strong>了，那我们在<strong>缺点1</strong>中提到的并发问题会再次发生</p>
+<h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p><strong>适合使用的场景：业务简单，读写QPS比较低的情况</strong>。<br>今天这个方案呢，优缺点都比较明显，binlog用来刷新缓存是一个很棒的选择，它天然的顺序性用来做同步操作很具有优势；其实<strong>它的并发问题来自于canal 或 databus，由于不同行、表、库的binlog的消费并不是时间串行的</strong>，那怎么解决这个问题呢，篇幅有限，我们后续文章再继续分享</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>如果对你有帮助，那就再好不过了~</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a href="https://github.com/alibaba/canal" target="_blank" rel="noopener"> canal </a><br>2.<a href="https://github.com/linkedin/databus" target="_blank" rel="noopener"> databus </a></p>
 
 
                 <hr>
@@ -239,13 +277,9 @@
 
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2018/12/01/db-and-cache-01/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-01">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2018/11/17/talking_redis_transaction/" data-toggle="tooltip" data-placement="top" title="浅谈Redis事务">Next Post &rarr;</a>
+                            <a href="/2018/12/01/db-and-cache-01/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-01">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
