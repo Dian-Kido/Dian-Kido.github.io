@@ -31,7 +31,8 @@
     <!-- Custom Fonts -->
     <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
     <!-- Hux change font-awesome CDN to qiniu -->
-    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
 
     <!-- 统一字体 -->
     <link rel="stylesheet" href="/css/font-Raleway.css" type="text/css">
@@ -108,14 +109,14 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -225,6 +226,21 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
+                     <a href="/2018/12/07/db-and-cache-02/">
+                        <h2 class="post-title">
+                            缓存与数据库一致性系列-02
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
                      <a href="/2018/12/08/db-and-cache-03/">
                         <h2 class="post-title">
                             缓存与数据库一致性系列-03
@@ -255,9 +271,9 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
-                     <a href="/2018/12/07/db-and-cache-02/">
+                     <a href="/2018/11/24/db-and-cache-preface/">
                         <h2 class="post-title">
-                            缓存与数据库一致性系列-02
+                            缓存与数据库一致性系列-序言
                         </h2>
                         
                     </a>
@@ -273,21 +289,6 @@
                      <a href="/2018/11/17/talking_redis_transaction/">
                         <h2 class="post-title">
                             浅谈Redis事务
-                        </h2>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
-                     <a href="/2018/11/24/db-and-cache-preface/">
-                        <h2 class="post-title">
-                            缓存与数据库一致性系列-序言
                         </h2>
                         
                     </a>
@@ -322,6 +323,21 @@
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
                   </li> -->
                  <div class="post-preview">
+                     <a href="/2018/12/07/db-and-cache-02/">
+                        <h2 class="post-title">
+                            缓存与数据库一致性系列-02
+                        </h2>
+                        
+                    </a>
+                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
+                </div>
+                <hr>
+                
+                  <!-- <li class="listing-item">
+                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
+                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
+                  </li> -->
+                 <div class="post-preview">
                      <a href="/2018/12/08/db-and-cache-03/">
                         <h2 class="post-title">
                             缓存与数据库一致性系列-03
@@ -340,21 +356,6 @@
                      <a href="/2018/12/09/db-and-cache-04/">
                         <h2 class="post-title">
                             缓存与数据库一致性系列-04
-                        </h2>
-                        
-                    </a>
-                    <!-- <p class="post-meta">{{ post.date | date:"%Y-%m-%d" }}</p> -->
-                </div>
-                <hr>
-                
-                  <!-- <li class="listing-item">
-                  <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
-                  <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
-                  </li> -->
-                 <div class="post-preview">
-                     <a href="/2018/12/07/db-and-cache-02/">
-                        <h2 class="post-title">
-                            缓存与数据库一致性系列-02
                         </h2>
                         
                     </a>
@@ -534,7 +535,7 @@
 
 <!--fastClick.js -->
 <script>
-    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+    async("/js/fastclick.min.js", function(){
         var $nav = document.querySelector("nav");
         if($nav) FastClick.attach($nav);
     })
@@ -574,7 +575,7 @@
 
 
 <!-- Image to hack wechat -->
-<img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" />
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" /> -->
 <!-- Migrate from head to bottom, no longer block render and still work -->
 
 </body>
