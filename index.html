@@ -203,6 +203,35 @@
 
 <div class="post-preview">
 
+    <a href="/2018/12/09/db-and-cache-03/">
+        <h2 class="post-title">
+            缓存与数据库一致性系列-03
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            经过前两篇的讨论，我们离实现“最终一致性”只差一步了
+在《缓存与数据库一致性系列-02》文章，我们提到上一个方案的并发问题
+
+
+读的时候，缓存中的数据已失效，此时又发生了更新
+数据更新的时候，缓存中的数据已失效，此时又发生了更新
+
+
+那我们我们可以看到，这个问题就来自于“读数据库” + “写缓存” 之间的交错并发，那怎么来避免呢？有一个方法就是：串行化，我们利用MQ将所有“读数据库” + “......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Kido on
+        2018-12-09
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2018/12/08/db-and-cache-02/">
         <h2 class="post-title">
             缓存与数据库一致性系列-02
@@ -331,15 +360,11 @@ What Should I Say ?
                     <div class="tags">
                         
                             
-                            <a href="/tags/#缓存" title="缓存" rel="4">缓存</a>
+                            <a href="/tags/#缓存" title="缓存" rel="5">缓存</a>
                             
                         
                             
-                            <a href="/tags/#数据库" title="数据库" rel="3">数据库</a>
-                            
-                        
-                            
-                            <a href="/tags/#后端" title="后端" rel="4">后端</a>
+                            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
                             
                         
                             
