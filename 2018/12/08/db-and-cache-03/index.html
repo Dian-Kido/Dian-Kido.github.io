@@ -216,7 +216,7 @@
                 post-container">
 
                 <p>经过前两篇的讨论，我们离实现<strong>“最终一致性”</strong>只差一步了</p>
-<p>在<a href="http://localhost:4000/2018/12/08/db-and-cache-02/" target="_blank" rel="noopener">《缓存与数据库一致性系列-02》</a>文章，我们提到上一个方案的并发问题</p>
+<p>在<a href="/2018/12/07/db-and-cache-02/">《缓存与数据库一致性系列-02》</a>文章，我们提到上一个方案的并发问题</p>
 <blockquote>
 <ul>
 <li>读的时候，缓存中的数据已失效，此时又发生了更新</li>
@@ -240,7 +240,7 @@
 <li><strong>读2.3 异步写MQ失败</strong>：没关系，缓存为空，是OK的，下次还读库就好了</li>
 </ul>
 <h4 id="2-无并发问题"><a href="#2-无并发问题" class="headerlink" title="2. 无并发问题"></a>2. 无并发问题</h4><p>这个方案让“读库 + 刷缓存”的操作串行化，这就不存在老数据覆盖新数据的并发问题了</p>
-<h4 id="3-香，真香"><a href="#3-香，真香" class="headerlink" title="3. 香，真香~"></a>3. 香，真香~</h4><h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><blockquote>
+<h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><blockquote>
 <p>要什么自行车啦</p>
 </blockquote>
 <h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p><strong>经过3篇由浅入深的介绍，我们终于实现了“最终一致性”</strong>。这个方案优点比较明显，解决了我们前几篇一直提到的“容灾问题”和“并发问题”，保证了缓存在最后和DB的一致。如果你的业务只需要达到“最终一致性”要求的话，这个方案是比较合理的。</p>
