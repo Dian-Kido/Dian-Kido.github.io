@@ -13,11 +13,11 @@
 
     <title>
         
-          缓存与数据库一致性系列-03 - Kido的博客 | Kido&#39;s Blog
+          缓存与数据库一致性系列-04 - Kido的博客 | Kido&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="https://blog.kido.site/2018/12/09/db-and-cache-03/">
+    <link rel="canonical" href="https://blog.kido.site/2018/12/09/db-and-cache-04/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -174,7 +174,7 @@
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('db-and-cache-03-bg01.jpg')
+        background-image: url('db-and-cache-04-bg01.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -189,7 +189,7 @@
                           <a class="tag" href="/tags/#数据库" title="数据库">数据库</a>
                         
                     </div>
-                    <h1>缓存与数据库一致性系列-03</h1>
+                    <h1>缓存与数据库一致性系列-04</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by Kido on
@@ -212,37 +212,41 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <p>经过前两篇的讨论，我们离实现<strong>“最终一致性”</strong>只差一步了</p>
-<p>在<a href="http://localhost:4000/2018/12/08/db-and-cache-02/" target="_blank" rel="noopener">《缓存与数据库一致性系列-02》</a>文章，我们提到上一个方案的并发问题</p>
+                <p>经过前三篇的讨论，我们终于的实现了“<strong>最终一致性</strong>”，那今天呢，我们再进一步，在前一个方案的基础上实现“<strong>强一致性</strong>”</p>
 <blockquote>
+<p>强一致性，包含两种含义：</p>
 <ul>
-<li>读的时候，缓存中的数据已失效，此时又发生了更新</li>
-<li>数据更新的时候，缓存中的数据已失效，此时又发生了更新</li>
+<li>缓存和DB数据一致</li>
+<li>缓存中没有数据</li>
 </ul>
 </blockquote>
-<p>那我们我们可以看到，这个问题就来自于<strong>“读数据库” + “写缓存” 之间的交错并发</strong>，那怎么来避免呢？<br>有一个方法就是：<strong>串行化</strong>，我们利用MQ将所有<strong>“读数据库” + “写缓存”</strong>的步骤串行化</p>
-<p><img class="shadow" width="777" src="db-and-cache-03-01.jpg"></p>
-<h3 id="写流程："><a href="#写流程：" class="headerlink" title="写流程："></a>写流程：</h3><p>第一步先删除缓存，删除之后再更新DB，我们监听从库(资源少的话主库也ok)的binlog，通过分析binlog我们解析出需要需要刷新的数据标识，然后将数据标识写入MQ，接下来就消费MQ，解析MQ消息来读库获取相应的数据刷新缓存。</p>
+<p>首先我们来分析一下，既然已经实现了“<strong>最终一致性</strong>”，那它和“<strong>强一致性</strong>”的区别是什么呢？没错，就是“<strong>时间差</strong>”，所以：</p>
 <blockquote>
-<p>关于MQ串行化，大大家可以去了解一下<a href="http://kafka.apache.org/documentation/#intro_topics" target="_blank" rel="noopener"> Kafka partition 机制 </a>，这里就不详术了</p>
+<p>“<strong>最终一致性方案</strong>” + “<strong>时间差</strong>” = “<strong>强一致性方案</strong>”</p>
 </blockquote>
-<h3 id="读流程："><a href="#读流程：" class="headerlink" title="读流程："></a>读流程：</h3><p>第一步先读缓存，如果缓存没读到，则去读DB，之后再异步将数据标识写入MQ（这里MQ与写流程的MQ是同一个），接下来就消费MQ，解析MQ消息来读库获取相应的数据刷新缓存。</p>
+<p>那我们的工作呢，就是加上时间差，实现方式：<strong>我们加一个缓存，将近期被修改的数据进行标记锁定，标记锁定的数据强行走DB，没锁定的数据，先走缓存</strong></p>
+<p><img class="shadow" width="777" src="db-and-cache-04-01.jpg"></p>
+<h3 id="写流程："><a href="#写流程：" class="headerlink" title="写流程："></a>写流程：</h3><p>我们把修改的数据通过Cache_0标记“正在被修改”（<em>何为标记锁定呢，比如你可以设定一个有效期为10S的key，一般来说10S对于后面的同步操作来说基本是够了，你要更稳，可以设置的更长~</em>)。如果标记成功，则继续往下走，后面的步骤与上一篇是一致的；<strong>那如果标记失败，则要放弃这次修改。</strong></p>
+<h3 id="读流程："><a href="#读流程：" class="headerlink" title="读流程："></a>读流程：</h3><p>先读Cache_0，看看要读的数据是否被标记，如果被标记，则直接读主库；如果没有被标记，后面的步骤与上一篇是一致的。</p>
 <h2 id="方案分析"><a href="#方案分析" class="headerlink" title="方案分析"></a>方案分析</h2><h3 id="优点剖析"><a href="#优点剖析" class="headerlink" title="优点剖析"></a>优点剖析</h3><h4 id="1-容灾完善"><a href="#1-容灾完善" class="headerlink" title="1. 容灾完善"></a>1. 容灾完善</h4><p>我们一步一步来分析：</p>
 <h6 id="写流程容灾分析"><a href="#写流程容灾分析" class="headerlink" title="写流程容灾分析"></a>写流程容灾分析</h6><ul>
-<li><strong>写1.1 DEL缓存失败</strong>：没关系，后面会覆盖</li>
-<li><strong>写1.4 写MQ失败</strong>：没关系，Databus或canal都会重试</li>
-<li><strong>消费MQ处罚的：1.5 || 1.6 失败</strong>：没关系，重新消费即可</li>
+<li><strong>写1.1 标记失败</strong>：没关系，放弃整个更新操作</li>
+<li><strong>写1.3 DEL缓存失败</strong>：没关系，后面会覆盖</li>
+<li><strong>写1.5 写MQ失败</strong>：没关系，Databus或Canal都会重试</li>
+<li><strong>消费MQ处罚的：1.6 || 1.7 失败</strong>：没关系，重新消费即可</li>
 </ul>
 <h6 id="读流程容灾分析"><a href="#读流程容灾分析" class="headerlink" title="读流程容灾分析"></a>读流程容灾分析</h6><ul>
+<li><strong>读2.1 读Cache_0失败</strong>：没关系，直接读主库</li>
 <li><strong>读2.3 异步写MQ失败</strong>：没关系，缓存为空，是OK的，下次还读库就好了</li>
 </ul>
-<h4 id="2-无并发问题"><a href="#2-无并发问题" class="headerlink" title="2. 无并发问题"></a>2. 无并发问题</h4><p>这个方案让“读库 + 刷缓存”的操作串行化，这就不存在老数据覆盖新数据的额并发问题了</p>
-<h4 id="3-香，真香"><a href="#3-香，真香" class="headerlink" title="3. 香，真香~"></a>3. 香，真香~</h4><h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><blockquote>
-<p>要什么自行车啦</p>
+<h4 id="2-无并发问题"><a href="#2-无并发问题" class="headerlink" title="2. 无并发问题"></a>2. 无并发问题</h4><p>这个方案让“读库 + 刷缓存”的操作串行化，这就不存在老数据覆盖新数据的并发问题了</p>
+<h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><h4 id="1-增加Cache-0强依赖"><a href="#1-增加Cache-0强依赖" class="headerlink" title="1. 增加Cache_0强依赖"></a>1. 增加Cache_0强依赖</h4><p>这个其实有点没办法，你要强一致性，必然要牺牲一些的。<br>但是呢，你这个可以吧Cache_0设计成多机器多分片，这样的话，即使部分分片挂了，也只有小部分流量透过Cache直接打到DB上，这是完全是可接受的</p>
+<h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p>OK，到此呢，我们已经实现了<strong>“数据库和缓存强一致性”</strong>，这个系列就先这样啦，等我学到了更好的方案，再来分享~</p>
+<blockquote>
+<p>这里还是要提一下：一致性的要求根据自己的业务决定就好，适合的才是最好的</p>
 </blockquote>
-<h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p><strong>经过3篇由浅入深的介绍，我们终于实现了“最终一致性”</strong>。这个方案优点比较明显，解决了我们前几篇一直提到的“容灾问题”和“并发问题”，保证了缓存在最后和DB的一致。如果你的业务只需要达到“最终一致性”要求的话，这个方案是比较合理的。</p>
-<p>OK，到今天为止，既然已经实现了“最终一致性”，那我们再进一步，“强一致性”又如何实现呢？我们下一期继续分享</p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a href="https://github.com/alibaba/canal" target="_blank" rel="noopener"> Canal </a><br>2.<a href="https://github.com/linkedin/databus" target="_blank" rel="noopener"> Databus </a><br>3.<a href="http://kafka.apache.org/" target="_blank" rel="noopener"> Kafka </a></p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>如果对你有帮助，那就再好不过了~</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a href="https://github.com/alibaba/canal" target="_blank" rel="noopener"> Canal </a><br>2.<a href="https://github.com/linkedin/databus" target="_blank" rel="noopener"> Databus </a><br>3.<a href="http://kafka.apache.org/" target="_blank" rel="noopener"> Kafka </a><br>4.<a href="http://redisdoc.com/key/expire.html" target="_blank" rel="noopener"> Redis Expire 命令 </a></p>
 
 
                 <hr>
@@ -253,7 +257,7 @@
                     
                     
                         <li class="next">
-                            <a href="/2018/12/08/db-and-cache-02/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-02">Next Post &rarr;</a>
+                            <a href="/2018/12/08/db-and-cache-03/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-03">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
