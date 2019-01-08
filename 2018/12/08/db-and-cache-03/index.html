@@ -227,14 +227,14 @@
 <p><img class="shadow" width="777" src="db-and-cache-03-01.jpg"></p>
 <h3 id="写流程："><a href="#写流程：" class="headerlink" title="写流程："></a>写流程：</h3><p>第一步先删除缓存，删除之后再更新DB，我们监听从库(资源少的话主库也ok)的binlog，通过分析binlog我们解析出需要需要刷新的数据标识，然后将数据标识写入MQ，接下来就消费MQ，解析MQ消息来读库获取相应的数据刷新缓存。</p>
 <blockquote>
-<p>关于MQ串行化，大大家可以去了解一下<a href="http://kafka.apache.org/documentation/#intro_topics" target="_blank" rel="noopener"> Kafka partition 机制 </a>，这里就不详术了</p>
+<p>关于MQ串行化，大家可以去了解一下<a href="http://kafka.apache.org/documentation/#intro_topics" target="_blank" rel="noopener"> Kafka partition 机制 </a>，这里就不详述了</p>
 </blockquote>
 <h3 id="读流程："><a href="#读流程：" class="headerlink" title="读流程："></a>读流程：</h3><p>第一步先读缓存，如果缓存没读到，则去读DB，之后再异步将数据标识写入MQ（这里MQ与写流程的MQ是同一个），接下来就消费MQ，解析MQ消息来读库获取相应的数据刷新缓存。</p>
 <h2 id="方案分析"><a href="#方案分析" class="headerlink" title="方案分析"></a>方案分析</h2><h3 id="优点剖析"><a href="#优点剖析" class="headerlink" title="优点剖析"></a>优点剖析</h3><h4 id="1-容灾完善"><a href="#1-容灾完善" class="headerlink" title="1. 容灾完善"></a>1. 容灾完善</h4><p>我们一步一步来分析：</p>
 <h6 id="写流程容灾分析"><a href="#写流程容灾分析" class="headerlink" title="写流程容灾分析"></a>写流程容灾分析</h6><ul>
 <li><strong>写1.1 DEL缓存失败</strong>：没关系，后面会覆盖</li>
 <li><strong>写1.4 写MQ失败</strong>：没关系，Databus或Canal都会重试</li>
-<li><strong>消费MQ处罚的：1.5 || 1.6 失败</strong>：没关系，重新消费即可</li>
+<li><strong>消费MQ的：1.5 || 1.6 失败</strong>：没关系，重新消费即可</li>
 </ul>
 <h6 id="读流程容灾分析"><a href="#读流程容灾分析" class="headerlink" title="读流程容灾分析"></a>读流程容灾分析</h6><ul>
 <li><strong>读2.3 异步写MQ失败</strong>：没关系，缓存为空，是OK的，下次还读库就好了</li>
@@ -406,7 +406,7 @@
 
                 </ul>
                 <p class="copyright text-muted">
-                    Copyright &copy; Kido 2018
+                    Copyright &copy; Kido 2019
                     <br>
 
                     <!--
@@ -494,27 +494,25 @@
 <!-- Google Analytics
 
 
-<script>
-    // dynamic User by Hux
-    var _gaId = 'UA-49627206-1';
-    var _gaDomain = 'null';
-
-    // Originial
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', _gaId, _gaDomain);
-    ga('send', 'pageview');
-</script>
-
-
 
  -->
 
 
 <!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '14296f5fec38bbac68ddad04e4cf4b72';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
 
 
 <!-- Side Catalog -->
