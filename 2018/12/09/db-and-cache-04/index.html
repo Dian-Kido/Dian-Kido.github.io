@@ -248,7 +248,7 @@
 <li><strong>写1.1 标记失败</strong>：没关系，放弃整个更新操作</li>
 <li><strong>写1.3 DEL缓存失败</strong>：没关系，后面会覆盖</li>
 <li><strong>写1.5 写MQ失败</strong>：没关系，Databus或Canal都会重试</li>
-<li><strong>消费MQ处罚的：1.6 || 1.7 失败</strong>：没关系，重新消费即可</li>
+<li><strong>消费MQ的：1.6 || 1.7 失败</strong>：没关系，重新消费即可</li>
 </ul>
 <h6 id="读流程容灾分析"><a href="#读流程容灾分析" class="headerlink" title="读流程容灾分析"></a>读流程容灾分析</h6><ul>
 <li><strong>读2.1 读Cache_0失败</strong>：没关系，直接读主库</li>
