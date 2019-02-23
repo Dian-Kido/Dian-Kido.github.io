@@ -213,14 +213,18 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1 id="1-JSON介绍"><a href="#1-JSON介绍" class="headerlink" title="1.JSON介绍"></a>1.JSON介绍</h1><p><strong>JSON</strong>(JavaScript Object Notation) 是一种轻量级的数据交换格式。 易于人阅读和编写。同时也易于机器解析和生成。 它基于<a href="http://www.crockford.com/javascript" title="JavaScript Programming Language" target="_blank" rel="noopener">JavaScript Programming Language</a>, <a href="http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf" title="Standard ECMA-262 3rd Edition - December 1999" target="_blank" rel="noopener">Standard ECMA-262 3rd Edition - December 1999</a>的一个子集。 JSON采用完全独立于语言的文本格式。 这些特性使JSON成为理想的数据交换语言。</p>
-<p>JSON建构于两种结构：</p>
+                <h1 id="1-JSON介绍"><a href="#1-JSON介绍" class="headerlink" title="1.JSON介绍"></a>1.JSON介绍</h1><p><strong>JSON</strong>(JavaScript Object Notation) 是一种<strong>轻量级的数据交换格式</strong>，易于人阅读和编写，同时也易于机器解析和生成，它基于<a href="http://www.crockford.com/javascript" title="JavaScript Programming Language" target="_blank" rel="noopener">JavaScript Programming Language</a>, <a href="http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf" title="Standard ECMA-262 3rd Edition - December 1999" target="_blank" rel="noopener">Standard ECMA-262 3rd Edition - December 1999</a>的一个子集。 <strong>JSON采用完全独立于语言的文本格式</strong>， <strong>这些特性使JSON成为理想的数据交换语言</strong>。</p>
+<p><strong>JSON值可以是：</strong></p>
 <ul>
-<li><p>“名称/值”对的集合（A collection of name/value pairs）。不同的语言中，它被理解为<em>对象（object）</em>，纪录（record），结构（struct），字典（dictionary），哈希表（hash table），有键列表（keyed list），或者关联数组 （associative array）。</p>
-</li>
-<li><p>值的有序列表（An ordered list of values）。在大部分语言中，它被理解为数组（array）。</p>
-</li>
+<li>数字（整数或浮点数）</li>
+<li>字符串（在双引号中）</li>
+<li>逻辑值（true 或 false）</li>
+<li>数组（在方括号中）</li>
+<li>对象（在花括号中）</li>
+<li>null</li>
 </ul>
+<p><strong>范例：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"name"</span>: <span class="string">"小强"</span>,</span><br><span class="line">  <span class="string">"age"</span>: <span class="number">17</span>,</span><br><span class="line">  <span class="string">"gender"</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="string">"height"</span>: <span class="number">1.77</span>,</span><br><span class="line">  <span class="string">"grade"</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="string">"middle-school"</span>: <span class="string">"\"W3C\" Middle School"</span>,</span><br><span class="line">  <span class="string">"skills"</span>: [</span><br><span class="line">    <span class="string">"JavaScript"</span>,</span><br><span class="line">    <span class="string">"Java"</span>,</span><br><span class="line">    <span class="string">"Python"</span>,</span><br><span class="line">    <span class="string">"Lisp"</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h1 id="2-三大JSON类库比较"><a href="#2-三大JSON类库比较" class="headerlink" title="2. 三大JSON类库比较"></a>2. 三大JSON类库比较</h1><h2 id="2-1-Jackson-分析"><a href="#2-1-Jackson-分析" class="headerlink" title="2.1 Jackson 分析"></a>2.1 Jackson 分析</h2><h4 id="1-依赖"><a href="#1-依赖" class="headerlink" title="1. 依赖"></a>1. 依赖</h4><p>三个jar包</p>
 <h4 id="2-序列化速度"><a href="#2-序列化速度" class="headerlink" title="2. 序列化速度"></a>2. 序列化速度</h4><p>三者NO.2 <a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="noopener"> (From: jvm-serializers)</a></p>
 <h4 id="3-反序列化速度"><a href="#3-反序列化速度" class="headerlink" title="3. 反序列化速度"></a>3. 反序列化速度</h4><p>三者NO.2 <a href="https://github.com/eishay/jvm-serializers/wiki" target="_blank" rel="noopener"> (From: jvm-serializers)</a></p>
