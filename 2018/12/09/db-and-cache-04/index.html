@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/Kid.gif">
+
+    <title>
+        
+          缓存与数据库一致性系列-04 - Kido的博客 | Kido&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://blog.kido.site/2018/12/09/db-and-cache-04/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+
+    <!-- 本地化 -->
+    <!--  <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- 统一字体 -->
+    <link rel="stylesheet" href="/css/font-Raleway.css" type="text/css">
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">KIDO</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+
+                     <!-- movie，book，NAVIGATION，ABOUT ME  属于跳转外部网站 -->
+                     <li>
+                          <a target="_blank" rel="noopener" href="http://kido.site/movie/list/1/15">电影推荐</a>
+                     </li>
+
+                    <li>
+                        <a href="/">技术博客</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/tab/show">网站导航</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/author/about">不要点开</a>
+                    </li>
+
+
+                    <!--
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    -->
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('db-and-cache-04-bg01.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#缓存" title="缓存">缓存</a>
+                        
+                    </div>
+                    <h1>缓存与数据库一致性系列-04</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Kido on
+                        2018-12-09
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>经过前三篇的讨论，我们终于的实现了“<strong>最终一致性</strong>”，那今天呢，我们再进一步，在前一个方案的基础上实现“<strong>强一致性</strong>”</p>
+<blockquote>
+<p>强一致性，包含两种含义：</p>
+<ul>
+<li>缓存和DB数据一致</li>
+<li>缓存中没有数据（或者说：不会去读缓存中的老版本数据）</li>
+</ul>
+</blockquote>
+<p>首先我们来分析一下，既然已经实现了“<strong>最终一致性</strong>”，那它和“<strong>强一致性</strong>”的区别是什么呢？没错，就是“<strong>时间差</strong>”，所以：</p>
+<blockquote>
+<p>“<strong>最终一致性方案</strong>” + “<strong>时间差</strong>” &#x3D; “<strong>强一致性方案</strong>”</p>
+</blockquote>
+<p>那我们的工作呢，就是加上时间差，实现方式：<strong>我们加一个缓存，将近期被修改的数据进行标记锁定。读的时候，标记锁定的数据强行走DB，没锁定的数据，先走缓存</strong></p>
+<img class="shadow" width="777" src="db-and-cache-04-01.jpg" />
+
+<h3 id="写流程："><a href="#写流程：" class="headerlink" title="写流程："></a>写流程：</h3><p>我们把修改的数据通过Cache_0标记“正在被修改”，如果标记成功，则继续往下走，后面的步骤与上一篇是一致的<a href="/2018/12/08/db-and-cache-03/">《缓存与数据库一致性系列-03》</a>；<strong>那如果标记失败，则要放弃这次修改。</strong></p>
+<blockquote>
+<p>何为标记锁定呢？比如你可以设定一个有效期为10S的key，Key存在即为锁定。一般来说10S对于后面的同步操作来说基本是够了~</p>
+</blockquote>
+<p><strong>如果说，还想更严谨一点，怕DB主从延迟太久、MQ延迟太久，或Databus监听的从库挂机之类的情况，我们可以考虑增加一个监控定时任务</strong>。<br>比如我们增加一个时间间隔2S的worker的去对比以下两个数据：</p>
+<ul>
+<li><strong>时间1： 最后修改数据库的时间</strong></li>
+</ul>
+<p><strong>VS</strong></p>
+<ul>
+<li><strong>时间2： 最后由更新引起的’MQ刷新缓存对应数据的实际更新数据库’的时间</strong></li>
+</ul>
+<blockquote>
+<p>数据1： 可由步骤1.1获得，并存储<br>数据2： 需要由binlog中解析获得，需要透传到MQ，这样后面就能存储了<br>这里提一下：如果多库的情况的话，存储这两个key需要与库一一对应</p>
+</blockquote>
+<p>如果 时间1 VS 时间2 相差超过5S，那我们就自动把相应的缓存分片读降级。</p>
+<h3 id="读流程："><a href="#读流程：" class="headerlink" title="读流程："></a>读流程：</h3><p>先读Cache_0，看看要读的数据是否被标记，如果被标记，则直接读主库；如果没有被标记，后面的步骤与上一篇是一致的(<a href="/2018/12/08/db-and-cache-03/">《缓存与数据库一致性系列-03》</a>)。</p>
+<h2 id="方案分析"><a href="#方案分析" class="headerlink" title="方案分析"></a>方案分析</h2><h3 id="优点剖析"><a href="#优点剖析" class="headerlink" title="优点剖析"></a>优点剖析</h3><h4 id="1-容灾完善"><a href="#1-容灾完善" class="headerlink" title="1. 容灾完善"></a>1. 容灾完善</h4><p>我们一步一步来分析：</p>
+<h6 id="写流程容灾分析"><a href="#写流程容灾分析" class="headerlink" title="写流程容灾分析"></a>写流程容灾分析</h6><ul>
+<li><strong>写1.1 标记失败</strong>：没关系，放弃整个更新操作</li>
+<li><strong>写1.3 DEL缓存失败</strong>：没关系，后面会覆盖</li>
+<li><strong>写1.5 写MQ失败</strong>：没关系，Databus或Canal都会重试</li>
+<li><strong>消费MQ的：1.6 || 1.7 失败</strong>：没关系，重新消费即可</li>
+</ul>
+<h6 id="读流程容灾分析"><a href="#读流程容灾分析" class="headerlink" title="读流程容灾分析"></a>读流程容灾分析</h6><ul>
+<li><strong>读2.1 读Cache_0失败</strong>：没关系，直接读主库</li>
+<li><strong>读2.3 异步写MQ失败</strong>：没关系，缓存为空，是OK的，下次还读库就好了</li>
+</ul>
+<h4 id="2-无并发问题"><a href="#2-无并发问题" class="headerlink" title="2. 无并发问题"></a>2. 无并发问题</h4><p>这个方案让“读库 + 刷缓存”的操作串行化，这就不存在老数据覆盖新数据的并发问题了</p>
+<h3 id="缺点剖析"><a href="#缺点剖析" class="headerlink" title="缺点剖析"></a>缺点剖析</h3><h4 id="1-增加Cache-0强依赖"><a href="#1-增加Cache-0强依赖" class="headerlink" title="1. 增加Cache_0强依赖"></a>1. 增加Cache_0强依赖</h4><p>这个其实有点没办法，你要强一致性，必然要牺牲一些的。<br>但是呢，你这个可以吧Cache_0设计成多机器多分片，这样的话，即使部分分片挂了，也只有小部分流量透过Cache直接打到DB上，这是完全是可接受的</p>
+<h4 id="2-复杂度是比较高的"><a href="#2-复杂度是比较高的" class="headerlink" title="2. 复杂度是比较高的"></a>2. 复杂度是比较高的</h4><p>涉及到Databus、MQ、定时任务等等组件，实现起来复杂度还是有的</p>
+<h2 id="方案总结"><a href="#方案总结" class="headerlink" title="方案总结"></a>方案总结</h2><p>OK，到此呢，我们已经实现了<strong>“数据库和缓存强一致性”</strong>，这个系列就先这样啦，等我学到了更好的方案，再来分享~</p>
+<blockquote>
+<p>这里还是要提一下：一致性的要求根据自己的业务决定就好，适合的才是最好的</p>
+</blockquote>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>如果对你有帮助，那就再好不过了~</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>1.<a target="_blank" rel="noopener" href="https://github.com/alibaba/canal"> Canal </a><br>2.<a target="_blank" rel="noopener" href="https://github.com/linkedin/databus"> Databus </a><br>3.<a target="_blank" rel="noopener" href="http://kafka.apache.org/"> Kafka </a><br>4.<a target="_blank" rel="noopener" href="http://redisdoc.com/key/expire.html"> Redis Expire 命令 </a></p>
+<h3 id="相关文章链接"><a href="#相关文章链接" class="headerlink" title="相关文章链接"></a>相关文章链接</h3><ol start="0">
+<li><a href="/2018/11/24/db-and-cache-preface/">《缓存与数据库一致性系列-序言》</a></li>
+<li><a href="/2018/12/01/db-and-cache-01/">《缓存与数据库一致性系列-01》</a></li>
+<li><a href="/2018/12/07/db-and-cache-02/">《缓存与数据库一致性系列-02》</a></li>
+<li><a href="/2018/12/08/db-and-cache-03/">《缓存与数据库一致性系列-03》</a></li>
+</ol>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/12/08/db-and-cache-03/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-03">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div id="disqus_thread"></div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#缓存" title="缓存">缓存</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://ocarina-diary.com/blogs/" target="_blank">陶笛日记</a></li>
+                    
+                        <li><a href="https://blog.gofancy.com.cn/" target="_blank">Peter Fan</a></li>
+                    
+                        <li><a href="http://www.tianshouzhi.com/" target="_blank">TianShouzhi</a></li>
+                    
+                        <li><a href="https://breeze924.github.io/" target="_blank">Breeze924</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://blog-kido-site.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("/js/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/1882973501">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Kido 2022
+                    <br>
+
+                    <!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://blog.kido.site/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("/js/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-140410086-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-140410086-2');
+</script>
+
+
+
+ -->
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '14296f5fec38bbac68ddad04e4cf4b72';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" /> -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

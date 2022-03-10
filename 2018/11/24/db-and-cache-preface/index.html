@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/Kid.gif">
+
+    <title>
+        
+          缓存与数据库一致性系列-序言 - Kido的博客 | Kido&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://blog.kido.site/2018/11/24/db-and-cache-preface/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+
+    <!-- 本地化 -->
+    <!--  <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- 统一字体 -->
+    <link rel="stylesheet" href="/css/font-Raleway.css" type="text/css">
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">KIDO</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+
+                     <!-- movie，book，NAVIGATION，ABOUT ME  属于跳转外部网站 -->
+                     <li>
+                          <a target="_blank" rel="noopener" href="http://kido.site/movie/list/1/15">电影推荐</a>
+                     </li>
+
+                    <li>
+                        <a href="/">技术博客</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/tab/show">网站导航</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/author/about">不要点开</a>
+                    </li>
+
+
+                    <!--
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    -->
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('db-and-cache-bg01.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#缓存" title="缓存">缓存</a>
+                        
+                    </div>
+                    <h1>缓存与数据库一致性系列-序言</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Kido on
+                        2018-11-24
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>一般来说，对于一个新的业务，一般会经历这几个阶段：</p>
+<h3 id="阶段1：单库阶段"><a href="#阶段1：单库阶段" class="headerlink" title="阶段1：单库阶段"></a>阶段1：单库阶段</h3><p>读写流量都比较小，这个时候所有的读写操作都在主库就ok了<br>这个时候，从库可能只是用来灾备<br><strong>风险分析：</strong>从数据一致性角度来说没有风险，全走主库美滋滋~~</p>
+<h3 id="阶段2：多库阶段"><a href="#阶段2：多库阶段" class="headerlink" title="阶段2：多库阶段"></a>阶段2：多库阶段</h3><h4 id="阶段2-1："><a href="#阶段2-1：" class="headerlink" title="阶段2.1："></a>阶段2.1：</h4><p>单库扛不住了，这个时候就会考虑到分库分表了，通过增加数据库的方式，把单库的QPS降下来<br><strong>风险分析：</strong> 从数据一致性角度来说没有风险，全走主库依然美滋滋~</p>
+<h4 id="阶段2-2："><a href="#阶段2-2：" class="headerlink" title="阶段2.2："></a>阶段2.2：</h4><p>读流量增加，主库的读QPS偏高，这个时候我们就想着把从库得利用起来，于是读写分离：写主库，读从库<br><strong>风险分析：</strong>读从库就意味着，<strong>读到的数据可能不是最新的</strong>，在实时性要求比较高的业务中是不能接受的，那应该如何解决呢？由于”DB主从一致性”不是本系列讨论的重点，所以这里推荐一篇文章,它介绍了几种比较不错的解决方案，感兴趣的大家可以去读一下：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&mid=2651959442&idx=1&sn=feb8ff75385d8031386e120ef3535329&scene=21#wechat_redirect">DB主从一致性架构优化4种方法</a></p>
+<h3 id="阶段3：数据库-缓存"><a href="#阶段3：数据库-缓存" class="headerlink" title="阶段3：数据库+缓存"></a>阶段3：数据库+缓存</h3><p>对于互联网公司来说，大部分业务都面临着读多写少的情况（如果你写都有压力的话，那你做的业务一定很赚钱吧），而数据库资源是极其宝贵的，所以我们没有办法一味的添加从库，或者说不断的增加分库分表来解决，一是因为老板不会同意，二是不断分库分表的话，数据迁移过程也是高风险的。<br>所以，这个时候我们一般会通过添加的缓存的方式，来解决读压力<br><strong>风险分析：缓存与数据库数据一致性问题</strong></p>
+<p>这就引出本系列文章，想要讨论的问题：<strong>缓存与数据库数据一致性问题</strong>，在提出解决方案之前，我们应该分析自己当前的业务和架构，看看自己的要达到的目标是什么？不同的方案解决的问题是不一样的</p>
+<h3 id="所以，你的业务和目标是怎样的呢？"><a href="#所以，你的业务和目标是怎样的呢？" class="headerlink" title="所以，你的业务和目标是怎样的呢？"></a>所以，你的业务和目标是怎样的呢？</h3><ul>
+<li>你是要求最终一致性、还是强一致性？</li>
+<li>你对缓存一致性的要求到底有多高？延迟1ms行不行？延迟1min行不行？</li>
+<li>你当前是单库单表？还是多库多表？</li>
+<li>你缓存的数据结构是怎样的？是否存在多表合并？是否存在多行合并的情况？甚至多库合并的情况？</li>
+<li>该如何容灾?更新、删除缓存失败你能不能接受？写数据库失败怎么办？</li>
+<li>如果删除缓存失败，你还允不允许更新数据库？</li>
+<li>……</li>
+</ul>
+<p>只有我们看清楚自己的系统需要达到一种怎样的要求，才能针对性的制定对应的方案。<br>本系列文章，会针对不同的场景提出不同的解决方案，并从并发、容灾等各方面分析其优缺点</p>
+<h3 id="相关文章链接"><a href="#相关文章链接" class="headerlink" title="相关文章链接"></a>相关文章链接</h3><ol>
+<li><a href="/2018/12/01/db-and-cache-01/">《缓存与数据库一致性系列-01》</a></li>
+<li><a href="/2018/12/07/db-and-cache-02/">《缓存与数据库一致性系列-02》</a></li>
+<li><a href="/2018/12/08/db-and-cache-03/">《缓存与数据库一致性系列-03》</a></li>
+<li><a href="/2018/12/09/db-and-cache-04/">《缓存与数据库一致性系列-04》</a></li>
+</ol>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>如果发现文章中有错误的地方，请联系我~<br>Mail：<a href="mailto:&#99;&#104;&#x65;&#x6e;&#x5f;&#x64;&#x69;&#x61;&#110;&#115;&#104;&#117;&#64;&#x73;&#x69;&#x6e;&#97;&#x2e;&#x63;&#x6f;&#109;">&#99;&#104;&#x65;&#x6e;&#x5f;&#x64;&#x69;&#x61;&#110;&#115;&#104;&#117;&#64;&#x73;&#x69;&#x6e;&#97;&#x2e;&#x63;&#x6f;&#109;</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2018/12/01/db-and-cache-01/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-01">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/11/23/json-note/" data-toggle="tooltip" data-placement="top" title="浅谈JSON类库">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div id="disqus_thread"></div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#缓存" title="缓存">缓存</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://ocarina-diary.com/blogs/" target="_blank">陶笛日记</a></li>
+                    
+                        <li><a href="https://blog.gofancy.com.cn/" target="_blank">Peter Fan</a></li>
+                    
+                        <li><a href="http://www.tianshouzhi.com/" target="_blank">TianShouzhi</a></li>
+                    
+                        <li><a href="https://breeze924.github.io/" target="_blank">Breeze924</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://blog-kido-site.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("/js/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/1882973501">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Kido 2022
+                    <br>
+
+                    <!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://blog.kido.site/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("/js/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-140410086-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-140410086-2');
+</script>
+
+
+
+ -->
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '14296f5fec38bbac68ddad04e4cf4b72';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" /> -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

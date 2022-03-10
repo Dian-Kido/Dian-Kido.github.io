@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/Kid.gif">
+
+    <title>
+        
+          浅谈JSON类库 - Kido的博客 | Kido&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="https://blog.kido.site/2018/11/23/json-note/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+
+    <!-- 本地化 -->
+    <!--  <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- 统一字体 -->
+    <link rel="stylesheet" href="/css/font-Raleway.css" type="text/css">
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">KIDO</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+
+                     <!-- movie，book，NAVIGATION，ABOUT ME  属于跳转外部网站 -->
+                     <li>
+                          <a target="_blank" rel="noopener" href="http://kido.site/movie/list/1/15">电影推荐</a>
+                     </li>
+
+                    <li>
+                        <a href="/">技术博客</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/tab/show">网站导航</a>
+                    </li>
+
+                    <li>
+                        <a target="_blank" rel="noopener" href="http://kido.site/author/about">不要点开</a>
+                    </li>
+
+
+                    <!--
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    -->
+
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('json-note-bg01.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#JSON" title="JSON">JSON</a>
+                        
+                    </div>
+                    <h1>浅谈JSON类库</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Kido on
+                        2018-11-23
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="1-JSON介绍"><a href="#1-JSON介绍" class="headerlink" title="1.JSON介绍"></a>1.JSON介绍</h1><p><strong>JSON</strong>(JavaScript Object Notation) 是一种<strong>轻量级的数据交换格式</strong>，易于人阅读和编写，同时也易于机器解析和生成，它基于<a target="_blank" rel="noopener" href="http://www.crockford.com/javascript" title="JavaScript Programming Language">JavaScript Programming Language</a>, <a target="_blank" rel="noopener" href="http://www.ecma-international.org/publications/files/ecma-st/ECMA-262.pdf" title="Standard ECMA-262 3rd Edition - December 1999">Standard ECMA-262 3rd Edition - December 1999</a>的一个子集。 <strong>JSON采用完全独立于语言的文本格式</strong>， <strong>这些特性使JSON成为理想的数据交换语言</strong>。</p>
+<p><strong>JSON值可以是：</strong></p>
+<ul>
+<li>数字（整数或浮点数）</li>
+<li>字符串（在双引号中）</li>
+<li>逻辑值（true 或 false）</li>
+<li>数组（在方括号中）</li>
+<li>对象（在花括号中）</li>
+<li>null</li>
+</ul>
+<p><strong>范例：</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;小强&quot;</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">17</span>,</span><br><span class="line">  <span class="string">&quot;gender&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="string">&quot;height&quot;</span>: <span class="number">1.77</span>,</span><br><span class="line">  <span class="string">&quot;grade&quot;</span>: <span class="literal">null</span>,</span><br><span class="line">  <span class="string">&quot;middle-school&quot;</span>: <span class="string">&quot;\&quot;W3C\&quot; Middle School&quot;</span>,</span><br><span class="line">  <span class="string">&quot;skills&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;JavaScript&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Java&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Python&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Lisp&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-三大JSON类库比较"><a href="#2-三大JSON类库比较" class="headerlink" title="2. 三大JSON类库比较"></a>2. 三大JSON类库比较</h1><h2 id="2-1-Jackson-分析"><a href="#2-1-Jackson-分析" class="headerlink" title="2.1 Jackson 分析"></a>2.1 Jackson 分析</h2><h4 id="1-依赖"><a href="#1-依赖" class="headerlink" title="1. 依赖"></a>1. 依赖</h4><p>三个jar包</p>
+<h4 id="2-序列化速度"><a href="#2-序列化速度" class="headerlink" title="2. 序列化速度"></a>2. 序列化速度</h4><p>三者NO.2 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="3-反序列化速度"><a href="#3-反序列化速度" class="headerlink" title="3. 反序列化速度"></a>3. 反序列化速度</h4><p>三者NO.2 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="4-方案缺点分析"><a href="#4-方案缺点分析" class="headerlink" title="4. 方案缺点分析"></a>4. 方案缺点分析</h4><ul>
+<li>Jackson的包大小和启动开销在某些领域（如移动电话）可能存在问题，特别是对于轻量使用的情况下（PS: jackson的core+databind+annotations需要超过1.5M，太臃肿）。<br>（出于所有这些原因，jackson决定创建一个更简单、更小的库，它支持一个称为Jackson Jr的功能子集。它构建在Jackson流式API上，但不依赖于数据绑定。因此，它的JAR和运行时内存使用量都要小得多。）</li>
+<li>Jackson也发生过少量的安全漏洞，比如：<a target="_blank" rel="noopener" href="https://www.openwall.com/lists/oss-security/2017/11/02/3">jackson-databind 反序列化漏洞</a></li>
+</ul>
+<h4 id="5-方案优点分析"><a href="#5-方案优点分析" class="headerlink" title="5. 方案优点分析"></a>5. 方案优点分析</h4><ul>
+<li>较高的准确性和兼容性</li>
+<li>jackson 的强项是灵活可定制, 并且具有了一个生态</li>
+<li>支持非常多JSON以外的数据格式，比如：<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-avro" title="Avro">Avro</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-cbor" title="CBOR">CBOR</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-csv" title="CSV">CSV</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformats-binary/tree/master/ion" title="Ion">Ion</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-properties" title="(Java) Properties">(Java) Properties</a> 、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-protobuf" title="Protobuf">Protobuf</a> 、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-smile" title="Smile">Smile</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-xml" title="XML">XML</a>、<a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson-dataformat-yaml" title="YAML">YAML</a>等</li>
+</ul>
+<h2 id="2-2-FastJSON-分析"><a href="#2-2-FastJSON-分析" class="headerlink" title="2.2 FastJSON 分析"></a>2.2 FastJSON 分析</h2><h4 id="1-依赖-1"><a href="#1-依赖-1" class="headerlink" title="1. 依赖"></a>1. 依赖</h4><p>单个jar</p>
+<h4 id="2-序列化速度-1"><a href="#2-序列化速度-1" class="headerlink" title="2. 序列化速度"></a>2. 序列化速度</h4><p>三者NO.1 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="3-反序列化速度-1"><a href="#3-反序列化速度-1" class="headerlink" title="3. 反序列化速度"></a>3. 反序列化速度</h4><p>三者NO.1 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="4-方案缺点分析-1"><a href="#4-方案缺点分析-1" class="headerlink" title="4. 方案缺点分析"></a>4. 方案缺点分析</h4><ul>
+<li><p>兼容性一般:<a target="_blank" rel="noopener" href="https://github.com/Alibaba/fastjson/wiki/incompatible_change_list" title="Alibaba/fastjson/已知影响兼容的变更">Alibaba&#x2F;fastjson&#x2F;已知影响兼容的变更</a></p>
+</li>
+<li><p>其解析json主要是用的String类substring这个方法<a href="https://link.zhihu.com/?target=https://github.com/alibaba/fastjson/blob/master/src/main/java/com/alibaba/fastjson/parser/JSONScanner.java" title="fastjson/JSONScanner.java at master · alibaba/fastjson · GitHub">fastjson&#x2F;JSONScanner.java at master · alibaba&#x2F;fastjson · GitHub</a>，所以解析起来非常“快”，因为申请内存次数很少。但是因为jdk1.7之前substring的实现并没有new一个新对象，在使用的时候，如果解析的json非常多，稍不注意就会出现内存泄漏（比如一个40K的json，你在对象里引用了里边的一个key，即使这个key只有2字节，也会导致这40K的json无法被垃圾回收器回收），这也是“快”带来的负面效果。而且这还不算，在jdk1.7以上版本对string的substring方法做了改写，改成了重新new一个string的方式，于是这个“快”的优势也不存在了。</p>
+</li>
+<li><p>翻阅fastjson的源码，你会发现有很多写死的代码，比如：针对spring之类的框架的各种处理，都是用classload判断是否存在这种类名<a href="https://link.zhihu.com/?target=https://github.com/alibaba/fastjson/blob/master/src/main/java/com/alibaba/fastjson/serializer/SerializeConfig.java" title="fastjson/SerializeConfig.java at master · alibaba/fastjson · GitHub">fastjson&#x2F;SerializeConfig.java at master · alibaba&#x2F;fastjson · GitHub</a>；那么这是什么意思呢？意思就是如果你用spring的那种思想，自己写了个类似的功能，因为你这个项目里没有spring的那个类，那么用起来就有一堆bug；当然不仅限于这些，还有很多，比如ASM字节码织入部分<a href="https://link.zhihu.com/?target=https://github.com/alibaba/fastjson/blob/master/src/main/java/com/alibaba/fastjson/serializer/ASMSerializerFactory.java" title="fastjson/ASMSerializerFactory.java at master · alibaba/fastjson · GitHub">fastjson&#x2F;ASMSerializerFactory.java at master · alibaba&#x2F;fastjson · GitHub</a>（温少的ASM方面水平一般），看源码的话，能发现的缺点数不胜数。</p>
+</li>
+<li><p>属性里分别有包含_（下划线开头、#开头）之类的属性，序列化为json时，出现属性丢失，1.2.14后修复了这个bug（<a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/releases/tag/1.2.14" title="fastjson-1.2.14 修复BUG功能增强">fastjson-1.2.14 修复BUG功能增强</a>）</p>
+</li>
+<li><p>发生了多次安全漏洞, 比如：<a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/incompatible_change_list">Fastjson远程代码执行漏洞</a>、<a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson/wiki/1_2_60_incompatible">Fastjson拒绝服务漏洞</a></p>
+</li>
+</ul>
+<h4 id="5-方案优点分析-1"><a href="#5-方案优点分析-1" class="headerlink" title="5. 方案优点分析"></a>5. 方案优点分析</h4><ul>
+<li><p>轻量级，依赖少</p>
+</li>
+<li><p>稳定性也还好，大规模使用，3441个回归测试，92%测试覆盖率( <a href="https://link.zhihu.com/?target=https://codecov.io/gh/alibaba/fastjson/branch/master" title="Dashboard ⋅ alibaba/fastjson">Dashboard ⋅ alibaba&#x2F;fastjson</a>)</p>
+</li>
+<li><p>目前在Oracle HotSpot JVM上使用标准版本速度还是很快的，在<a href="https://link.zhihu.com/?target=https://github.com/eishay/jvm-serializers/wiki" title="Home · eishay/jvm-serializers Wiki · GitHub">Home · eishay&#x2F;jvm-serializers Wiki · GitHub</a>测试中，fastjson各类json databind中最快的，这个快也能得到一些其他作者的承认的，比如jackson的作者tatu。fastjson-1.1.52.android版本，在android 5&#x2F;6上性能都很好的，比原生org.json&#x2F;gson&#x2F;jackson性能都好很多</p>
+</li>
+<li><p>fastjson也有一些jackson不具备的功能，比如JSONPath ( <a href="https://link.zhihu.com/?target=https://github.com/alibaba/fastjson/wiki/JSONPath" title="JSONPath · alibaba/fastjson Wiki · GitHub">JSONPath · alibaba&#x2F;fastjson Wiki · GitHub</a>) 的支持</p>
+</li>
+</ul>
+<h2 id="2-3-GSON-分析"><a href="#2-3-GSON-分析" class="headerlink" title="2.3 GSON 分析"></a>2.3 GSON 分析</h2><h4 id="1-依赖-2"><a href="#1-依赖-2" class="headerlink" title="1. 依赖"></a>1. 依赖</h4><p>单个jar</p>
+<h4 id="2-序列化速度-2"><a href="#2-序列化速度-2" class="headerlink" title="2. 序列化速度"></a>2. 序列化速度</h4><p>三者NO.3 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="3-反序列化速度-2"><a href="#3-反序列化速度-2" class="headerlink" title="3. 反序列化速度"></a>3. 反序列化速度</h4><p>三者NO.3 <a target="_blank" rel="noopener" href="https://github.com/eishay/jvm-serializers/wiki"> (From: jvm-serializers)</a></p>
+<h4 id="4-方案缺点分析-2"><a href="#4-方案缺点分析-2" class="headerlink" title="4. 方案缺点分析"></a>4. 方案缺点分析</h4><ul>
+<li>性能略慢于其余两项，不过差距也还好</li>
+</ul>
+<h4 id="5-方案优点分析-2"><a href="#5-方案优点分析-2" class="headerlink" title="5. 方案优点分析"></a>5. 方案优点分析</h4><ul>
+<li>较高的准确性和兼容性，支持任意复杂的对象（具有深度继承层次结构和广泛使用泛型类型）</li>
+<li>轻量级，依赖少</li>
+<li>API 简单易用</li>
+<li>暂没有发现严重的安全漏洞（截止:2019-09-24）</li>
+</ul>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><blockquote>
+<p>From: <a target="_blank" rel="noopener" href="http://kimmking.github.io/2017/06/06/json-best-practice/"> JSON最佳实践</a></p>
+</blockquote>
+<h1 id="3-参考文档"><a href="#3-参考文档" class="headerlink" title="3.参考文档"></a>3.参考文档</h1><ul>
+<li><a target="_blank" rel="noopener" href="http://www.json.org/json-zh.html" title="JSON官网">JSON官网</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/gson">https://github.com/google/gson</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/FasterXML/jackson">https://github.com/FasterXML/jackson</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/alibaba/fastjson">https://github.com/alibaba/fastjson</a></li>
+<li><a href="https://link.zhihu.com/?target=https://github.com/eishay/jvm-serializers/wiki">eishay&#x2F;jvm-serializers JVM序列化测评</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/44199956">知乎：fastjson这么快老外为啥还 jackson?</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/darcyliu/google-styleguide/blob/master/JSONStyleGuide.md">Google-JSON风格指南</a></li>
+<li><a target="_blank" rel="noopener" href="http://kimmking.github.io/2017/06/06/json-best-practice/">JSON最佳实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e740196225a4">你真的会用Gson吗?Gson使用指南</a></li>
+</ul>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2018/11/24/db-and-cache-preface/" data-toggle="tooltip" data-placement="top" title="缓存与数据库一致性系列-序言">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/11/17/talking_redis_transaction/" data-toggle="tooltip" data-placement="top" title="浅谈Redis事务">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div id="disqus_thread"></div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#JSON" title="JSON">JSON</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://ocarina-diary.com/blogs/" target="_blank">陶笛日记</a></li>
+                    
+                        <li><a href="https://blog.gofancy.com.cn/" target="_blank">Peter Fan</a></li>
+                    
+                        <li><a href="http://www.tianshouzhi.com/" target="_blank">TianShouzhi</a></li>
+                    
+                        <li><a href="https://breeze924.github.io/" target="_blank">Breeze924</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://blog-kido-site.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("/js/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/1882973501">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/Dian-Kido">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Kido 2022
+                    <br>
+
+                    <!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a>
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                    -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://blog.kido.site/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("/js/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-140410086-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-140410086-2');
+</script>
+
+
+
+ -->
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '14296f5fec38bbac68ddad04e4cf4b72';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<!-- <img src="https://blog.kido.site/img/icon_wechat.png" width="0" height="0" /> -->
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
